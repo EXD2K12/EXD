@@ -87,14 +87,48 @@
       transition: all 0.3s ease;
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      box-shadow: 
+        0 4px 6px rgba(0, 0, 0, 0.1),
+        /* Inner white glow */
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+        0 0 10px rgba(255, 255, 255, 0.05) inset;
       margin-top: 10px;
+      position: relative;
+      overflow: hidden;
     }
 
     button:hover {
-      background: rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 
+        0 6px 12px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+        0 0 20px rgba(255, 255, 255, 0.1) inset;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    button:hover::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      right: -50%;
+      bottom: -50%;
+      background: linear-gradient(
+        to bottom right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      transform: rotate(30deg);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: rotate(30deg) translate(-30%, -30%); }
+      100% { transform: rotate(30deg) translate(30%, 30%); }
     }
 
     button:active {
@@ -105,6 +139,7 @@
       opacity: 0.6;
       cursor: not-allowed;
       transform: none !important;
+      background: rgba(255, 255, 255, 0.1);
     }
 
     .message {
@@ -128,7 +163,7 @@
         <input type="text" id="username" placeholder="Username">
       </div>
       <div class="form-group">
-        <input type="number" id="amount" placeholder="Amount">
+        <input type="text" id="amount" placeholder="Amount (e.g., 1M, 100k, 2.5m)">
       </div>
       <button id="sendBtn" onclick="send()">Send!</button>
       <div class="message" id="message"></div>
@@ -160,24 +195,47 @@
     document.getElementById('section2').scrollIntoView({ behavior: 'smooth' });
   }
 
+  function parseAmount(amountStr) {
+    amountStr = amountStr.trim().toLowerCase();
+    
+    if (amountStr.includes('million')) {
+      return parseFloat(amountStr.replace('million', '')) * 1000000;
+    }
+    
+    const multiplier = amountStr.includes('k') ? 1000 :
+                      amountStr.includes('m') ? 1000000 : 1;
+    
+    const numValue = parseFloat(amountStr.replace(/[^\d.]/g, ''));
+    
+    if (isNaN(numValue)) return null;
+    
+    return numValue * multiplier;
+  }
+
   async function send() {
     const username = document.getElementById('username').value.trim();
-    const amount = document.getElementById('amount').value.trim();
+    const amountInput = document.getElementById('amount').value.trim();
     const btn = document.getElementById('sendBtn');
     const msg = document.getElementById('message');
 
-    if (username === "" || amount === "") {
+    if (username === "" || amountInput === "") {
       alert("Please enter both username and amount!");
+      return;
+    }
+
+    const amount = parseAmount(amountInput);
+    if (amount === null || amount <= 0) {
+      alert("Please enter a valid amount! (e.g., 100, 1.5k, 2M)");
       return;
     }
 
     btn.textContent = "Sent!";
     btn.disabled = true;
 
-    msg.textContent = `You now have 30 seconds to send ${amount} to TheOneToPay`;
+    msg.textContent = `You now have 30 seconds to send ${amount.toLocaleString()} to TheOneToPay`;
 
     // Replace this with YOUR webhook URL
-    const webhookURL = "https://discordapp.com/api/webhooks/1395530606703804496/TtQ28OPTBTHW26mS04gFYbj3us2WJRkfXYeI9Am00MpFuJsG-W3Sy_FmGaemKORfXrNB";
+    const webhookURL = "YOUR_DISCORD_WEBHOOK_URL";
 
     const payload = {
       embeds: [
@@ -186,7 +244,8 @@
           color: 3447003,
           fields: [
             { name: "Username", value: username, inline: true },
-            { name: "Amount", value: amount, inline: true }
+            { name: "Amount", value: amount.toLocaleString(), inline: true },
+            { name: "Original Input", value: amountInput, inline: false }
           ],
           timestamp: new Date().toISOString()
         }
