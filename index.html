@@ -15,6 +15,7 @@
       height: 100%;
       overflow: hidden;
       font-family: Arial, sans-serif;
+      transition: background 0.3s linear;
     }
 
     .container {
@@ -32,7 +33,6 @@
       justify-content: center;
       align-items: center;
       color: white;
-      transition: background 0.3s linear;
     }
 
     h1 {
@@ -84,34 +84,28 @@
 
   <script>
     const container = document.getElementById('container');
-    const section1 = document.getElementById('section1');
-    const section2 = document.getElementById('section2');
 
-    // Smooth gradient transition while scrolling
     container.addEventListener('scroll', () => {
       const scrollTop = container.scrollTop;
       const maxScroll = window.innerHeight;
 
       const t = Math.min(scrollTop / maxScroll, 1);
 
-      // Blend colors
-      const color1 = [0, 123, 255]; // #007BFF
-      const color2 = [0, 86, 179];  // #0056b3
+      const color1 = [0, 123, 255];
+      const color2 = [0, 86, 179];
 
       const r = Math.round(color1[0] * (1 - t) + color2[0] * t);
       const g = Math.round(color1[1] * (1 - t) + color2[1] * t);
       const b = Math.round(color1[2] * (1 - t) + color2[2] * t);
 
-      section1.style.background = `rgb(${r}, ${g}, ${b})`;
-      section2.style.background = `rgb(${r}, ${g}, ${b})`;
+      document.body.style.background = `rgb(${r}, ${g}, ${b})`;
     });
 
-    // Initial colors
-    section1.style.background = 'rgb(0,123,255)';
-    section2.style.background = 'rgb(0,86,179)';
+    // Set initial background
+    document.body.style.background = 'rgb(0,123,255)';
 
     function scrollToNext() {
-      section2.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('section2').scrollIntoView({ behavior: 'smooth' });
     }
   </script>
 </body>
