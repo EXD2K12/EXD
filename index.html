@@ -163,33 +163,14 @@
 
     msg.textContent = `You now have 30 seconds to send ${amount} to TheOneToPay`;
 
-    // Replace this with YOUR webhook URL
-    const webhookURL = "https://discordapp.com/api/webhooks/1395530606703804496/TtQ28OPTBTHW26mS04gFYbj3us2WJRkfXYeI9Am00MpFuJsG-W3Sy_FmGaemKORfXrNB";
-
-    const payload = {
-      embeds: [
-        {
-          title: "New Payment",
-          color: 3447003,
-          fields: [
-            { name: "Username", value: username, inline: true },
-            { name: "Amount", value: amount, inline: true }
-          ],
-          timestamp: new Date().toISOString()
-        }
-      ]
-    };
-
     try {
-      await fetch(webhookURL, {
+      await fetch("/api/send", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, amount })
       });
     } catch (error) {
-      console.error("Error sending to Discord:", error);
+      console.error("Error sending to backend:", error);
     }
 
     setTimeout(() => {
