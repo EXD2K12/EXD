@@ -13,31 +13,26 @@
 
     html, body {
       height: 100%;
-      overflow: hidden; /* Disable normal scrolling */
+      overflow: hidden;
       font-family: Arial, sans-serif;
     }
 
     .container {
-      height: 200vh; /* Fake double height for scroll event */
+      height: 100%;
       overflow-y: scroll;
+      scroll-snap-type: y mandatory;
       scroll-behavior: smooth;
     }
 
     section {
-      height: 100vh; /* Full screen */
+      height: 100vh;
+      width: 100%;
+      scroll-snap-align: start;
       display: flex;
       justify-content: center;
       align-items: center;
       color: white;
-      transition: background 0.8s ease;
-    }
-
-    .section1 {
-      background: linear-gradient(135deg, #007BFF, #00A2FF);
-    }
-
-    .section2 {
-      background: linear-gradient(135deg, #0056b3, #007BFF);
+      transition: background 0.3s linear;
     }
 
     h1 {
@@ -71,38 +66,52 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <section class="section1">
+  <div class="container" id="container">
+    <section id="section1">
       <div>
         <h1>EXAMPLE</h1>
         <div class="scroll-down" onclick="scrollToNext()">⬇️</div>
       </div>
     </section>
 
-    <section class="section2">
+    <section id="section2">
       <div>
         <h1>Second Page</h1>
-        <p>This is the next section.</p>
+        <p>Scroll up or down to switch.</p>
       </div>
     </section>
   </div>
 
   <script>
-    const container = document.querySelector('.container');
-    let locked = false;
+    const container = document.getElementById('container');
+    const section1 = document.getElementById('section1');
+    const section2 = document.getElementById('section2');
 
-    container.addEventListener('wheel', function(e) {
-      if (locked) return;
+    // Smooth gradient transition while scrolling
+    container.addEventListener('scroll', () => {
+      const scrollTop = container.scrollTop;
+      const maxScroll = window.innerHeight;
 
-      if (e.deltaY > 0) {
-        locked = true;
-        scrollToNext();
-        setTimeout(() => locked = false, 1000); // prevent multiple triggers
-      }
+      const t = Math.min(scrollTop / maxScroll, 1);
+
+      // Blend colors
+      const color1 = [0, 123, 255]; // #007BFF
+      const color2 = [0, 86, 179];  // #0056b3
+
+      const r = Math.round(color1[0] * (1 - t) + color2[0] * t);
+      const g = Math.round(color1[1] * (1 - t) + color2[1] * t);
+      const b = Math.round(color1[2] * (1 - t) + color2[2] * t);
+
+      section1.style.background = `rgb(${r}, ${g}, ${b})`;
+      section2.style.background = `rgb(${r}, ${g}, ${b})`;
     });
 
+    // Initial colors
+    section1.style.background = 'rgb(0,123,255)';
+    section2.style.background = 'rgb(0,86,179)';
+
     function scrollToNext() {
-      document.querySelector('.section2').scrollIntoView({ behavior: 'smooth' });
+      section2.scrollIntoView({ behavior: 'smooth' });
     }
   </script>
 </body>
