@@ -33,14 +33,16 @@
       justify-content: center;
       align-items: center;
       color: white;
+      flex-direction: column;
     }
 
     h1 {
       font-size: 4rem;
+      margin-bottom: 20px;
     }
 
     p {
-      font-size: 1.5rem;
+      font-size: 1.2rem;
     }
 
     .scroll-down {
@@ -63,6 +65,39 @@
         transform: translateY(5px);
       }
     }
+
+    .form-group {
+      margin: 10px 0;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      margin: 5px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background: white;
+      color: #007BFF;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: opacity 0.3s;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -75,38 +110,93 @@
     </section>
 
     <section id="section2">
-      <div>
-        <h1>Second Page</h1>
-        <p>Scroll up or down to switch.</p>
+      <h1>Send Payment</h1>
+      <div class="form-group">
+        <input type="text" id="username" placeholder="Username">
       </div>
+      <div class="form-group">
+        <input type="number" id="amount" placeholder="Amount">
+      </div>
+      <button id="sendBtn" onclick="send()">Send!</button>
+      <div class="message" id="message"></div>
     </section>
   </div>
 
   <script>
-    const container = document.getElementById('container');
+  const container = document.getElementById('container');
 
-    container.addEventListener('scroll', () => {
-      const scrollTop = container.scrollTop;
-      const maxScroll = window.innerHeight;
+  container.addEventListener('scroll', () => {
+    const scrollTop = container.scrollTop;
+    const maxScroll = window.innerHeight;
 
-      const t = Math.min(scrollTop / maxScroll, 1);
+    const t = Math.min(scrollTop / maxScroll, 1);
 
-      const color1 = [0, 123, 255];
-      const color2 = [0, 86, 179];
+    const color1 = [0, 123, 255];
+    const color2 = [0, 86, 179];
 
-      const r = Math.round(color1[0] * (1 - t) + color2[0] * t);
-      const g = Math.round(color1[1] * (1 - t) + color2[1] * t);
-      const b = Math.round(color1[2] * (1 - t) + color2[2] * t);
+    const r = Math.round(color1[0] * (1 - t) + color2[0] * t);
+    const g = Math.round(color1[1] * (1 - t) + color2[1] * t);
+    const b = Math.round(color1[2] * (1 - t) + color2[2] * t);
 
-      document.body.style.background = `rgb(${r}, ${g}, ${b})`;
-    });
+    document.body.style.background = `rgb(${r}, ${g}, ${b})`;
+  });
 
-    // Set initial background
-    document.body.style.background = 'rgb(0,123,255)';
+  document.body.style.background = 'rgb(0,123,255)';
 
-    function scrollToNext() {
-      document.getElementById('section2').scrollIntoView({ behavior: 'smooth' });
+  function scrollToNext() {
+    document.getElementById('section2').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  async function send() {
+    const username = document.getElementById('username').value.trim();
+    const amount = document.getElementById('amount').value.trim();
+    const btn = document.getElementById('sendBtn');
+    const msg = document.getElementById('message');
+
+    if (username === "" || amount === "") {
+      alert("Please enter both username and amount!");
+      return;
     }
+
+    btn.textContent = "Sent!";
+    btn.disabled = true;
+
+    msg.textContent = `You now have 30 seconds to send ${amount} to TheOneToPay`;
+
+    // Replace this with YOUR webhook URL
+    const webhookURL = "YOUR_DISCORD_WEBHOOK_URL";
+
+    const payload = {
+      embeds: [
+        {
+          title: "New Payment",
+          color: 3447003,
+          fields: [
+            { name: "Username", value: username, inline: true },
+            { name: "Amount", value: amount, inline: true }
+          ],
+          timestamp: new Date().toISOString()
+        }
+      ]
+    };
+
+    try {
+      await fetch(webhookURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+    } catch (error) {
+      console.error("Error sending to Discord:", error);
+    }
+
+    setTimeout(() => {
+      btn.textContent = "Send!";
+      btn.disabled = false;
+    }, 1000);
+  }
   </script>
 </body>
 </html>
