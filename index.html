@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>EXAMPLE</title>
   <style>
-    /* Reset and base styles */
     * {
       margin: 0;
       padding: 0;
@@ -14,8 +13,14 @@
 
     html, body {
       height: 100%;
-      scroll-behavior: smooth;
+      overflow: hidden; /* Disable normal scrolling */
       font-family: Arial, sans-serif;
+    }
+
+    .container {
+      height: 200vh; /* Fake double height for scroll event */
+      overflow-y: scroll;
+      scroll-behavior: smooth;
     }
 
     section {
@@ -66,21 +71,36 @@
   </style>
 </head>
 <body>
-  <section class="section1">
-    <div>
-      <h1>EXAMPLE</h1>
-      <div class="scroll-down" onclick="scrollToNext()">⬇️</div>
-    </div>
-  </section>
+  <div class="container">
+    <section class="section1">
+      <div>
+        <h1>EXAMPLE</h1>
+        <div class="scroll-down" onclick="scrollToNext()">⬇️</div>
+      </div>
+    </section>
 
-  <section class="section2">
-    <div>
-      <h1>Second Page</h1>
-      <p>This is the next section.</p>
-    </div>
-  </section>
+    <section class="section2">
+      <div>
+        <h1>Second Page</h1>
+        <p>This is the next section.</p>
+      </div>
+    </section>
+  </div>
 
   <script>
+    const container = document.querySelector('.container');
+    let locked = false;
+
+    container.addEventListener('wheel', function(e) {
+      if (locked) return;
+
+      if (e.deltaY > 0) {
+        locked = true;
+        scrollToNext();
+        setTimeout(() => locked = false, 1000); // prevent multiple triggers
+      }
+    });
+
     function scrollToNext() {
       document.querySelector('.section2').scrollIntoView({ behavior: 'smooth' });
     }
