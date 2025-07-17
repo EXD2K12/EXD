@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>EXAMPLE</title>
+  <title>Payment Portal</title>
   <style>
     * {
       margin: 0;
@@ -14,7 +14,7 @@
     html, body {
       height: 100%;
       overflow: hidden;
-      font-family: Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
       transition: background 0.3s linear;
     }
 
@@ -34,135 +34,143 @@
       align-items: center;
       color: white;
       flex-direction: column;
+      text-align: center;
     }
 
     h1 {
-      font-size: 4rem;
-      margin-bottom: 20px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      font-size: 3.5rem;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      font-weight: 600;
     }
 
     .form-group {
-      margin: 10px 0;
+      margin: 1rem 0;
+      width: 100%;
+      max-width: 300px;
     }
 
     input {
-      padding: 12px 15px;
+      padding: 1rem;
       font-size: 1rem;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 8px;
-      margin: 8px 0;
-      background-color: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      margin: 0.5rem 0;
+      background-color: rgba(255, 255, 255, 0.2);
       color: white;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
-      width: 250px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: all 0.4s ease;
+      width: 100%;
     }
 
     input:focus {
       outline: none;
-      background-color: rgba(255, 255, 255, 0.25);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      background-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.5);
     }
 
     input::placeholder {
       color: rgba(255, 255, 255, 0.7);
+      font-weight: 300;
     }
 
-    button {
-      padding: 12px 30px;
-      font-size: 1rem;
+    /* Button with white/grey glowing border */
+    .btn {
+      margin: 1.5rem 0;
+      padding: 1rem 2.5rem;
+      font-size: 1.1rem;
       font-weight: 600;
-      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      outline: none;
       color: white;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 8px;
       cursor: pointer;
-      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      box-shadow: 
-        0 4px 6px rgba(0, 0, 0, 0.1),
-        0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-      margin-top: 10px;
       position: relative;
-      overflow: hidden;
+      z-index: 1;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
     }
-
-    button:hover {
-      background: rgba(255, 255, 255, 0.25);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      transform: translateY(-2px);
-      /* White and off-white grey glowing borders */
-      box-shadow: 
-        0 0 0 1px rgba(255, 255, 255, 0.8),
-        0 0 0 2px rgba(245, 245, 245, 0.5),
-        0 6px 20px rgba(0, 0, 0, 0.2),
-        0 0 15px rgba(255, 255, 255, 0.1) inset;
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      animation: pulse-glow 2s infinite alternate;
+    
+    .btn::after {
+      content: "";
+      z-index: -1;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(50, 50, 50, 0.5);
+      left: 0;
+      top: 0;
+      border-radius: 10px;
     }
-
-    @keyframes pulse-glow {
-      0% {
-        box-shadow: 
-          0 0 0 1px rgba(255, 255, 255, 0.8),
-          0 0 0 2px rgba(245, 245, 245, 0.5),
-          0 6px 20px rgba(0, 0, 0, 0.2),
-          0 0 15px rgba(255, 255, 255, 0.1) inset;
-      }
-      100% {
-        box-shadow: 
-          0 0 0 1px rgba(255, 255, 255, 0.9),
-          0 0 0 3px rgba(245, 245, 245, 0.6),
-          0 8px 25px rgba(0, 0, 0, 0.25),
-          0 0 20px rgba(255, 255, 255, 0.15) inset;
-      }
-    }
-
-    button:hover::before {
-      content: '';
+    
+    /* Glowing white/grey border */
+    .btn::before {
+      content: "";
+      background: linear-gradient(
+        45deg,
+        #ffffff, #e0e0e0, #c0c0c0, #a0a0a0,
+        #c0c0c0, #e0e0e0, #ffffff
+      );
       position: absolute;
       top: -2px;
       left: -2px;
-      right: -2px;
-      bottom: -2px;
-      border-radius: 10px;
-      background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.8) 0%,
-        rgba(245, 245, 245, 0.6) 50%,
-        rgba(255, 255, 255, 0.8) 100%
-      );
+      background-size: 600%;
       z-index: -1;
-      animation: border-glow 3s linear infinite;
+      width: calc(100% + 4px);
+      height: calc(100% + 4px);
+      filter: blur(5px);
+      animation: glowing 3s linear infinite;
+      transition: opacity .3s ease-in-out;
+      border-radius: 12px;
+      opacity: 0;
     }
-
-    @keyframes border-glow {
-      0% { opacity: 0.7; }
-      50% { opacity: 0.9; }
-      100% { opacity: 0.7; }
+    
+    @keyframes glowing {
+      0% { background-position: 0 0; }
+      50% { background-position: 400% 0; }
+      100% { background-position: 0 0; }
     }
-
-    button:active {
+    
+    .btn:hover::before {
+      opacity: 1;
+    }
+    
+    .btn:hover {
+      transform: translateY(-3px);
+    }
+    
+    .btn:active {
       transform: translateY(0);
     }
-
-    button:disabled {
-      opacity: 0.6;
+    
+    .btn:active:after {
+      background: rgba(30, 30, 30, 0.5);
+    }
+    
+    .btn:disabled {
+      opacity: 0.7;
       cursor: not-allowed;
       transform: none !important;
-      background: rgba(255, 255, 255, 0.1);
-      animation: none !important;
+    }
+    
+    .btn:disabled::before {
+      display: none;
     }
 
     .message {
-      margin-top: 20px;
+      margin-top: 1.5rem;
       font-size: 1rem;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+      text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      padding: 0.8rem 1.5rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      backdrop-filter: blur(5px);
+      max-width: 300px;
     }
   </style>
 </head>
@@ -170,35 +178,34 @@
   <div class="container" id="container">
     <section id="section1">
       <div>
-        <h1>EXAMPLE</h1>
+        <h1>Payment Portal</h1>
       </div>
     </section>
 
     <section id="section2">
       <h1>Send Payment</h1>
       <div class="form-group">
-        <input type="text" id="username" placeholder="Username">
+        <input type="text" id="username" placeholder="Recipient Username">
       </div>
       <div class="form-group">
-        <input type="text" id="amount" placeholder="Amount (e.g., 1M, 100k, 2.5m)">
+        <input type="text" id="amount" placeholder="Amount (e.g., 100, 1.5k, 2M)">
       </div>
-      <button id="sendBtn" onclick="send()">Send!</button>
+      <button class="btn" id="sendBtn" onclick="send()">Send Payment</button>
       <div class="message" id="message"></div>
     </section>
   </div>
 
   <script>
-    // ... (keep all your existing JavaScript code exactly the same) ...
     const container = document.getElementById('container');
 
+    // Background gradient scroll effect
     container.addEventListener('scroll', () => {
       const scrollTop = container.scrollTop;
       const maxScroll = window.innerHeight;
-
       const t = Math.min(scrollTop / maxScroll, 1);
 
-      const color1 = [0, 123, 255];
-      const color2 = [0, 86, 179];
+      const color1 = [0, 123, 255];  // Bright blue
+      const color2 = [10, 30, 70];   // Dark navy
 
       const r = Math.round(color1[0] * (1 - t) + color2[0] * t);
       const g = Math.round(color1[1] * (1 - t) + color2[1] * t);
@@ -209,10 +216,7 @@
 
     document.body.style.background = 'rgb(0,123,255)';
 
-    function scrollToNext() {
-      document.getElementById('section2').scrollIntoView({ behavior: 'smooth' });
-    }
-
+    // Parse amount with support for k/m/million
     function parseAmount(amountStr) {
       amountStr = amountStr.trim().toLowerCase();
       
@@ -230,12 +234,14 @@
       return numValue * multiplier;
     }
 
+    // Send payment data
     async function send() {
       const username = document.getElementById('username').value.trim();
       const amountInput = document.getElementById('amount').value.trim();
       const btn = document.getElementById('sendBtn');
       const msg = document.getElementById('message');
 
+      // Validate inputs
       if (username === "" || amountInput === "") {
         alert("Please enter both username and amount!");
         return;
@@ -243,49 +249,51 @@
 
       const amount = parseAmount(amountInput);
       if (amount === null || amount <= 0) {
-        alert("Please enter a valid amount! (e.g., 100, 1.5k, 2M)");
+        alert("Please enter a valid amount!\nExamples: 100, 1.5k, 2M, 3.2 million");
         return;
       }
 
-      btn.textContent = "Sent!";
+      // Update UI
+      btn.textContent = "Processing...";
       btn.disabled = true;
+      msg.textContent = `Preparing to send ${amount.toLocaleString()} to ${username}`;
 
-      msg.textContent = `You now have 30 seconds to send ${amount.toLocaleString()} to TheOneToPay`;
-
-      // Replace this with YOUR webhook URL
-      const webhookURL = "https://discordapp.com/api/webhooks/1395530606703804496/TtQ28OPTBTHW26mS04gFYbj3us2WJRkfXYeI9Am00MpFuJsG-W3Sy_FmGaemKORfXrNB";
-
+      // Prepare Discord webhook payload
       const payload = {
-        embeds: [
-          {
-            title: "New Payment",
-            color: 3447003,
-            fields: [
-              { name: "Username", value: username, inline: true },
-              { name: "Amount", value: amount.toLocaleString(), inline: true },
-              { name: "Original Input", value: amountInput, inline: false }
-            ],
-            timestamp: new Date().toISOString()
-          }
-        ]
+        embeds: [{
+          title: "💸 New Payment Request",
+          color: 0x00AAFF,
+          fields: [
+            { name: "Recipient", value: username, inline: true },
+            { name: "Amount", value: amount.toLocaleString(), inline: true },
+            { name: "Original Input", value: amountInput, inline: false }
+          ],
+          timestamp: new Date().toISOString(),
+          footer: { text: "Payment Portal Notification" }
+        }]
       };
 
       try {
-        await fetch(webhookURL, {
+        const webhookURL = "https://discordapp.com/api/webhooks/1395530606703804496/TtQ28OPTBTHW26mS04gFYbj3us2WJRkfXYeI9Am00MpFuJsG-W3Sy_FmGaemKORfXrNB";
+        
+        const response = await fetch(webhookURL, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
-      } catch (error) {
-        console.error("Error sending to Discord:", error);
-      }
 
-      setTimeout(() => {
-        btn.textContent = "Send!";
-        btn.disabled = false;
-      }, 1000);
+        if (!response.ok) throw new Error('Webhook failed');
+        
+        msg.textContent = `✅ Sent ${amount.toLocaleString()} to ${username}`;
+      } catch (error) {
+        console.error("Error:", error);
+        msg.textContent = "⚠️ Error processing payment. Please try again.";
+      } finally {
+        setTimeout(() => {
+          btn.textContent = "Send Payment";
+          btn.disabled = false;
+        }, 3000);
+      }
     }
   </script>
 </body>
