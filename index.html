@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Payment Portal</title>
+  <title>Request Portal</title>
   <style>
     * {
       margin: 0;
@@ -50,7 +50,7 @@
       max-width: 300px;
     }
 
-    input {
+    input, textarea {
       padding: 1rem;
       font-size: 1rem;
       border: 1px solid rgba(255, 255, 255, 0.3);
@@ -65,14 +65,19 @@
       width: 100%;
     }
 
-    input:focus {
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    input:focus, textarea:focus {
       outline: none;
       background-color: rgba(255, 255, 255, 0.3);
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
       border: 1px solid rgba(255, 255, 255, 0.5);
     }
 
-    input::placeholder {
+    input::placeholder, textarea::placeholder {
       color: rgba(255, 255, 255, 0.7);
       font-weight: 300;
     }
@@ -178,19 +183,22 @@
   <div class="container" id="container">
     <section id="section1">
       <div>
-        <h1>Payment Portal</h1>
+        <h1>Request Portal</h1>
       </div>
     </section>
 
     <section id="section2">
-      <h1>Send Payment</h1>
+      <h1>Send Request</h1>
       <div class="form-group">
         <input type="text" id="username" placeholder="Recipient Username">
       </div>
       <div class="form-group">
-        <input type="text" id="amount" placeholder="Amount (e.g., 100, 1.5k, 2M)">
+        <input type="text" id="amount" placeholder="Amount (max 800k)" max="800000">
       </div>
-      <button class="btn" id="sendBtn" onclick="send()">Send Payment</button>
+      <div class="form-group">
+        <textarea id="reason" placeholder="Reason for the request"></textarea>
+      </div>
+      <button class="btn" id="sendBtn" onclick="send()">Send Request</button>
       <div class="message" id="message"></div>
     </section>
   </div>
@@ -234,16 +242,17 @@
       return numValue * multiplier;
     }
 
-    // Send payment data
+    // Send request data
     async function send() {
       const username = document.getElementById('username').value.trim();
       const amountInput = document.getElementById('amount').value.trim();
+      const reason = document.getElementById('reason').value.trim();
       const btn = document.getElementById('sendBtn');
       const msg = document.getElementById('message');
 
       // Validate inputs
-      if (username === "" || amountInput === "") {
-        alert("Please enter both username and amount!");
+      if (username === "" || amountInput === "" || reason === "") {
+        alert("Please fill in all fields!");
         return;
       }
 
@@ -253,23 +262,29 @@
         return;
       }
 
+      // Check maximum amount
+      if (amount > 800000) {
+        alert("Maximum request amount is 800k!");
+        return;
+      }
+
       // Update UI
       btn.textContent = "Processing...";
       btn.disabled = true;
-      msg.textContent = `Preparing to send ${amount.toLocaleString()} to ${username}`;
+      msg.textContent = `Processing request for ${amount.toLocaleString()}`;
 
       // Prepare Discord webhook payload
       const payload = {
         embeds: [{
-          title: "💸 New Payment Request",
+          title: "📩 New Money Request",
           color: 0x00AAFF,
           fields: [
             { name: "Recipient", value: username, inline: true },
             { name: "Amount", value: amount.toLocaleString(), inline: true },
-            { name: "Original Input", value: amountInput, inline: false }
+            { name: "Reason", value: reason || "No reason provided", inline: false }
           ],
           timestamp: new Date().toISOString(),
-          footer: { text: "Payment Portal Notification" }
+          footer: { text: "Request Portal Notification" }
         }]
       };
 
@@ -284,13 +299,13 @@
 
         if (!response.ok) throw new Error('Webhook failed');
         
-        msg.textContent = `✅ Sent ${amount.toLocaleString()} to ${username}`;
+        msg.textContent = `✅ Request sent for ${amount.toLocaleString()}`;
       } catch (error) {
         console.error("Error:", error);
-        msg.textContent = "⚠️ Error processing payment. Please try again.";
+        msg.textContent = "⚠️ Error processing request. Please try again.";
       } finally {
         setTimeout(() => {
-          btn.textContent = "Send Payment";
+          btn.textContent = "Send Request";
           btn.disabled = false;
         }, 3000);
       }
