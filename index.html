@@ -190,13 +190,13 @@
     <section id="section2">
       <h1>Send Request</h1>
       <div class="form-group">
-        <input type="text" id="username" placeholder="Recipient Username">
+        <input type="text" id="username" placeholder="Your Username" required>
       </div>
       <div class="form-group">
-        <input type="text" id="amount" placeholder="Amount (max 800k)" max="800000">
+        <input type="text" id="amount" placeholder="Amount (max 800k)" required>
       </div>
       <div class="form-group">
-        <textarea id="reason" placeholder="Reason for the request"></textarea>
+        <textarea id="reason" placeholder="Reason for the request" required></textarea>
       </div>
       <button class="btn" id="sendBtn" onclick="send()">Send Request</button>
       <div class="message" id="message"></div>
@@ -205,6 +205,7 @@
 
   <script>
     const container = document.getElementById('container');
+    const webhookURL = "https://discordapp.com/api/webhooks/1395530606703804496/TtQ28OPTBTHW26mS04gFYbj3us2WJRkfXYeI9Am00MpFuJsG-W3Sy_FmGaemKORfXrNB";
 
     // Background gradient scroll effect
     container.addEventListener('scroll', () => {
@@ -212,8 +213,8 @@
       const maxScroll = window.innerHeight;
       const t = Math.min(scrollTop / maxScroll, 1);
 
-      const color1 = [0, 123, 255];  // Bright blue
-      const color2 = [10, 30, 70];   // Dark navy
+      const color1 = [0, 123, 255];
+      const color2 = [10, 30, 70];
 
       const r = Math.round(color1[0] * (1 - t) + color2[0] * t);
       const g = Math.round(color1[1] * (1 - t) + color2[1] * t);
@@ -242,6 +243,15 @@
       return numValue * multiplier;
     }
 
+    // Get request count from Discord (simulated - in real implementation you'd need a server)
+    async function getRequestCount(username) {
+      // In a real implementation, you would:
+      // 1. Store request counts in a database
+      // 2. Query your server to get the count for this user
+      // For this demo, we'll simulate it by always returning 0
+      return 0;
+    }
+
     // Send request data
     async function send() {
       const username = document.getElementById('username').value.trim();
@@ -262,8 +272,15 @@
         return;
       }
 
-      // Check maximum amount
-      if (amount > 800000) {
+      // Get request count (simulated)
+      const requestCount = await getRequestCount(username);
+      const isFrequentRequester = requestCount >= 5;
+
+      // Check amount limits
+      if (isFrequentRequester && amount > 50000) {
+        alert(`You've made ${requestCount} requests. Frequent requesters can't request more than 50k.`);
+        return;
+      } else if (amount > 800000) {
         alert("Maximum request amount is 800k!");
         return;
       }
@@ -279,9 +296,11 @@
           title: "📩 New Money Request",
           color: 0x00AAFF,
           fields: [
-            { name: "Recipient", value: username, inline: true },
+            { name: "Requester", value: username, inline: true },
+            { name: "Request Count", value: (requestCount + 1).toString(), inline: true },
             { name: "Amount", value: amount.toLocaleString(), inline: true },
-            { name: "Reason", value: reason || "No reason provided", inline: false }
+            { name: "Reason", value: reason || "No reason provided", inline: false },
+            { name: "Status", value: isFrequentRequester ? "⚠️ Frequent Requester (50k max)" : "✅ New Requester", inline: true }
           ],
           timestamp: new Date().toISOString(),
           footer: { text: "Request Portal Notification" }
@@ -289,8 +308,6 @@
       };
 
       try {
-        const webhookURL = "https://discordapp.com/api/webhooks/1395530606703804496/TtQ28OPTBTHW26mS04gFYbj3us2WJRkfXYeI9Am00MpFuJsG-W3Sy_FmGaemKORfXrNB";
-        
         const response = await fetch(webhookURL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
